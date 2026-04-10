@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>HM STORE · Fixed Auth State</title>
+    <title>HM STORE · Fixed UI Auth</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -20,6 +20,7 @@
             query, where, orderBy, serverTimestamp 
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+        // GANTI DENGAN KONFIGURASI ANDA
         const firebaseConfig = {
             apiKey: "AIzaSyADbhUgayYWwVdDxvFV5Tn39_jF44MCn8U",
             authDomain: "store-3e543.firebaseapp.com",
@@ -34,7 +35,6 @@
         const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
 
-        window.firebaseReady = true;
         window.auth = auth;
         window.db = db;
         window.googleProvider = googleProvider;
@@ -47,7 +47,9 @@
         };
         
         console.log('✅ Firebase ready');
-        setTimeout(() => { if (window.initApp) window.initApp(); }, 100);
+        // Panggil initApp setelah DOM siap
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => window.initApp());
+        else window.initApp();
     </script>
 
     <style>
@@ -126,7 +128,10 @@
     <div class="max-w-7xl mx-auto flex justify-between items-center">
         <span class="text-xl font-black italic uppercase">hm<span class="text-cyan-400">store</span></span>
         <div class="flex items-center gap-3">
-            <div id="user-profile-area" class="flex items-center gap-2"></div>
+            <div id="user-profile-area" class="flex items-center gap-2">
+                <!-- Default: tombol Sign In selalu muncul -->
+                <button onclick="window.openAuthModal()" class="btn-outline py-1.5 px-4 text-xs">Sign In</button>
+            </div>
             <button onclick="window.toggleCart()" class="relative w-9 h-9 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
                 <i class="fas fa-shopping-cart text-cyan-400"></i>
                 <span id="cart-count" class="absolute -top-1 -right-1 w-5 h-5 bg-cyan-500 rounded-full text-[10px] font-black flex items-center justify-center text-slate-900">0</span>
@@ -180,8 +185,6 @@
 </main>
 
 <script>
-    function waitForFirebase(cb) { if (window.firebaseFn?.onAuthStateChanged) cb(); else setTimeout(() => waitForFirebase(cb), 50); }
-
     window.appState = { currentUser: null, userRole: null, products: [], cart: [] };
     
     window.showNotification = (msg, type='success') => {
@@ -223,7 +226,15 @@
     };
     
     window.renderAdminTable = () => { document.getElementById('admin-products-table').innerHTML = window.appState.products.map(p=>`<tr><td><div class="flex items-center gap-2"><span class="text-xl">${p.image||'📦'}</span><span class="font-bold text-sm">${p.name}</span></div></td><td class="text-cyan-400">Rp ${p.price.toLocaleString()}</td><td>${p.stock||0}</td><td><button onclick="window.adminEditProduct('${p.id}')" class="text-cyan-400 mr-2"><i class="fas fa-edit"></i></button><button onclick="window.adminDeleteProduct('${p.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></td></tr>`).join(''); };
-    window.loadProducts = async () => { const { getDocs, collection } = window.firebaseFn; const snap = await getDocs(collection(window.db,'products')); const p=[]; snap.forEach(d=>p.push({id:d.id,...d.data()})); window.appState.products = p; window.renderProductsGrid(); window.renderAdminTable(); };
+    
+    window.loadProducts = async () => { 
+        if(!window.firebaseFn) { setTimeout(window.loadProducts, 200); return; }
+        const { getDocs, collection } = window.firebaseFn;
+        const snap = await getDocs(collection(window.db,'products')); 
+        const p=[]; snap.forEach(d=>p.push({id:d.id,...d.data()})); 
+        window.appState.products = p; window.renderProductsGrid(); window.renderAdminTable(); 
+    };
+    
     window.adminAddProduct = async () => { const name=prompt('Name'); if(!name) return; const price=parseInt(prompt('Price')); if(!price) return; const { addDoc, collection } = window.firebaseFn; await addDoc(collection(window.db,'products'),{name,price,stock:999,image:'📦',badge:'NEW'}); window.loadProducts(); };
     window.adminEditProduct = async (id) => { const p=window.appState.products.find(x=>x.id===id); if(!p) return; const nn=prompt('Name',p.name); if(nn) p.name=nn; const np=prompt('Price',p.price); if(np) p.price=parseInt(np); const { updateDoc, doc } = window.firebaseFn; await updateDoc(doc(window.db,'products',id),{name:p.name,price:p.price}); window.loadProducts(); };
     window.adminDeleteProduct = async (id) => { if(confirm('Delete?')) { const { deleteDoc, doc } = window.firebaseFn; await deleteDoc(doc(window.db,'products',id)); window.loadProducts(); } };
@@ -242,48 +253,49 @@
     window.logout = async () => { const { signOut } = window.firebaseFn; await signOut(window.auth); document.getElementById('admin-view').classList.add('hidden'); document.getElementById('store-view').classList.remove('hidden'); };
     window.showPromo = ()=>showNotification('🔥 Code HMSTORE50 applied!');
 
-    window.initApp = () => {
-        waitForFirebase(() => {
-            const { onAuthStateChanged } = window.firebaseFn;
-            const auth = window.auth, db = window.db;
-            const { setDoc, doc, getDoc, getDocs, collection } = window.firebaseFn;
+    // ✅ INISIALISASI AUTH - PASTIKAN TOMBOL SIGN IN TIDAK HILANG
+    window.initApp = function() {
+        if (!window.firebaseFn) { setTimeout(window.initApp, 100); return; }
+        
+        const { onAuthStateChanged } = window.firebaseFn;
+        const auth = window.auth, db = window.db;
+        const { setDoc, doc, getDoc, getDocs, collection } = window.firebaseFn;
+        
+        onAuthStateChanged(auth, async (user) => {
+            window.appState.currentUser = user; 
+            const area = document.getElementById('user-profile-area'), adminBtn = document.getElementById('admin-dashboard-btn');
             
-            onAuthStateChanged(auth, async (user) => {
-                window.appState.currentUser = user; 
-                const area = document.getElementById('user-profile-area'), adminBtn = document.getElementById('admin-dashboard-btn');
-                if(user) {
-                    const uRef = doc(db,'users',user.uid); const snap = await getDoc(uRef); let role='user';
-                    if(snap.exists()) role = snap.data().role||'user'; 
-                    else await setDoc(uRef, {email:user.email, name:user.displayName||user.email?.split('@')[0], photoURL:user.photoURL, role:'user'});
-                    window.appState.userRole = role; 
-                    area.innerHTML = `<img src="${user.photoURL||'https://ui-avatars.com/api/?name='+(user.displayName||'U')}" class="user-avatar"><span class="hidden md:inline text-sm font-semibold">${user.displayName||user.email}</span><button onclick="window.showMyOrders()" class="ml-1 text-xs text-cyan-400"><i class="fas fa-history"></i></button>`;
-                    adminBtn.classList.toggle('hidden', role !== 'admin');
-                    const uSnap = await getDocs(collection(db,'users')); document.getElementById('stats-customer-count').textContent = uSnap.size;
-                } else { 
-                    area.innerHTML = `<button onclick="window.openAuthModal()" class="btn-outline py-1.5 px-4 text-xs">Sign In</button>`; 
-                    adminBtn.classList.add('hidden'); 
-                }
-                window.loadProducts();
-            });
-            
-            document.getElementById('signin-btn').onclick = async () => { 
-                const e=document.getElementById('auth-email').value.trim(), p=document.getElementById('auth-password').value; 
-                if(!e||!p) { showNotification('Email and password required','error'); return; }
-                try { await window.firebaseFn.signInWithEmailAndPassword(auth, e, p); closeAuthModal(); } catch(er) { showNotification(er.message,'error'); } 
-            };
-            document.getElementById('signup-btn').onclick = async () => { 
-                const e=document.getElementById('auth-email').value.trim(), p=document.getElementById('auth-password').value; 
-                if(!e||!p) { showNotification('Email and password required','error'); return; }
-                try { await window.firebaseFn.createUserWithEmailAndPassword(auth, e, p); closeAuthModal(); } catch(er) { showNotification(er.message,'error'); } 
-            };
-            document.getElementById('google-signin-btn').onclick = async () => { 
-                try { await window.firebaseFn.signInWithPopup(auth, window.googleProvider); closeAuthModal(); } catch(er) { showNotification(er.message,'error'); } 
-            };
+            if(user) {
+                const uRef = doc(db,'users',user.uid); const snap = await getDoc(uRef); let role='user';
+                if(snap.exists()) role = snap.data().role||'user'; 
+                else await setDoc(uRef, {email:user.email, name:user.displayName||user.email?.split('@')[0], photoURL:user.photoURL, role:'user'});
+                window.appState.userRole = role; 
+                area.innerHTML = `<img src="${user.photoURL||'https://ui-avatars.com/api/?name='+(user.displayName||'U')}" class="user-avatar"><span class="hidden md:inline text-sm font-semibold">${user.displayName||user.email}</span><button onclick="window.showMyOrders()" class="ml-1 text-xs text-cyan-400"><i class="fas fa-history"></i></button>`;
+                adminBtn.classList.toggle('hidden', role !== 'admin');
+                const uSnap = await getDocs(collection(db,'users')); document.getElementById('stats-customer-count').textContent = uSnap.size;
+            } else { 
+                // ✅ Kembalikan tombol Sign In jika user logout
+                area.innerHTML = `<button onclick="window.openAuthModal()" class="btn-outline py-1.5 px-4 text-xs">Sign In</button>`; 
+                adminBtn.classList.add('hidden'); 
+            }
+            window.loadProducts();
         });
+        
+        // Binding auth buttons
+        document.getElementById('signin-btn').onclick = async () => { 
+            const e=document.getElementById('auth-email').value.trim(), p=document.getElementById('auth-password').value; 
+            if(!e||!p) { showNotification('Email and password required','error'); return; }
+            try { await window.firebaseFn.signInWithEmailAndPassword(auth, e, p); closeAuthModal(); } catch(er) { showNotification(er.message,'error'); } 
+        };
+        document.getElementById('signup-btn').onclick = async () => { 
+            const e=document.getElementById('auth-email').value.trim(), p=document.getElementById('auth-password').value; 
+            if(!e||!p) { showNotification('Email and password required','error'); return; }
+            try { await window.firebaseFn.createUserWithEmailAndPassword(auth, e, p); closeAuthModal(); } catch(er) { showNotification(er.message,'error'); } 
+        };
+        document.getElementById('google-signin-btn').onclick = async () => { 
+            try { await window.firebaseFn.signInWithPopup(auth, window.googleProvider); closeAuthModal(); } catch(er) { showNotification(er.message,'error'); } 
+        };
     };
-    
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => window.initApp());
-    else window.initApp();
 </script>
 </body>
 </html>
